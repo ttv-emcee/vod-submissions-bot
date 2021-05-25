@@ -1,0 +1,19 @@
+{
+  "name": "vod-submissions-bot",
+  "version": "0.0.1",
+  "description": "Utility and tooling to handle http://twitch.tv/emceeF's vod submissions queue",
+  "main": "dist/main.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ttv-emceef/vod-submissions-bot.git"
+  },
+  "author": "Anup Kishore",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ttv-emceef/vod-submissions-bot/issues"
+  },
+  "homepage": "https://github.com/ttv-emceef/vod-submissions-bot#readme"
+}
