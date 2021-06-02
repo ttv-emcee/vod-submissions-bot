@@ -15,5 +15,13 @@
   "bugs": {
     "url": "https://github.com/ttv-emceef/vod-submissions-bot/issues"
   },
-  "homepage": "https://github.com/ttv-emceef/vod-submissions-bot#readme"
+  "homepage": "https://github.com/ttv-emceef/vod-submissions-bot#readme",
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.1",
+    "@typescript-eslint/eslint-plugin": "^4.26.0",
+    "@typescript-eslint/parser": "^4.26.0",
+    "eslint": "^7.27.0",
+    "prettier": "^2.3.0",
+    "typescript": "^4.2.4"
+  }
 }

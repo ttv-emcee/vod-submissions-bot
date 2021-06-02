@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "extends": "@tsconfig/node16/tsconfig.json",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+
+    "strict": true,
+
+    "noUnusedLocals": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+
+    "esModuleInterop": true
+  }
+}
