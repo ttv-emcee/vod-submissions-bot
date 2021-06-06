@@ -1,2 +1,5 @@
 dist/
 node_modules/
+src/config/secrets/*
+!src/config/secrets/index.ts
+src/config/config.json
