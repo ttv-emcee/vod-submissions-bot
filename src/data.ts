@@ -100,5 +100,6 @@ export async function fetchSubmissions(): Promise<types.Submission[]> {
   return (data.rowData || [])
     .map(parseSubmission)
     .filter(utils.notNull)
-    .map((x: types.Submission) => x);
+    .map((x: types.Submission) => x)
+    .sort(utils.sortBy((s) => s.submission_timestamp.getTime()));
 }
