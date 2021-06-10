@@ -84,7 +84,7 @@ export async function fetchSubmissions(): Promise<types.Submission[]> {
     config.spreadsheet.data_sheet_id
   );
 
-  console.log(
+  console.error(
     JSON.stringify({
       type_: "LOG",
       payload: {
