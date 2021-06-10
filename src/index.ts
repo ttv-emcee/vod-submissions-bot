@@ -3,7 +3,7 @@ import { Submission } from "./types";
 
 type Entry = {
   twitch_username: string;
-  entries: Submission[];
+  pending: Submission[];
   completed: Submission[];
 };
 type Lookup = { [twitch_username: string]: Entry };
@@ -26,7 +26,7 @@ function updateEntry(entry: Entry, submission: Submission): Entry {
     case "pending":
       return {
         ...entry,
-        entries: [submission],
+        pending: [...entry.pending, submission],
       };
     case "expired":
       return entry;
@@ -35,12 +35,12 @@ function updateEntry(entry: Entry, submission: Submission): Entry {
 
 function newEntry(submission: Submission): Entry {
   const { twitch_username } = submission;
-  const emptyEntry = { twitch_username, entries: [], completed: [] };
+  const emptyEntry: Entry = { twitch_username, pending: [], completed: [] };
 
   return updateEntry(emptyEntry, submission);
 }
 
-export function generateEntries(
+function generateEntries(
   acc: Accumulator,
   submission: Submission
 ): Accumulator {
