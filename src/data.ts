@@ -46,11 +46,12 @@ export function parseSubmission(
     "notes",
   ];
 
-  const cellValues = [
-    // Add id via row index, for now
-    `${index}`,
-    ...(row.values || []).map(toCellValue),
-  ];
+  const cellValues = (row.values || []).map(toCellValue);
+
+  if (!cellValues.some((x) => x !== null)) return null;
+
+  // Add id via row index, for now
+  cellValues.unshift(`${index}`);
 
   const obj: Record<string, unknown> = keys
     .map((key, i) => [key, cellValues[i]] as [string, CellValue])
