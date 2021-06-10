@@ -62,9 +62,13 @@ export function parseSubmission(
   if (Either.isLeft(decoded)) {
     console.error(
       JSON.stringify({
-        source: row,
-        index,
-        errors: PathReporter.report(decoded),
+        type_: "ERROR",
+        payload: {
+          type_: "DECODING_ERROR",
+          source: row,
+          index,
+          errors: PathReporter.report(decoded),
+        },
       })
     );
     return null;
@@ -77,6 +81,19 @@ export async function fetchSubmissions(): Promise<types.Submission[]> {
   const data = await sheets.getSheet(
     config.spreadsheet.id,
     config.spreadsheet.data_sheet_id
+  );
+
+  console.log(
+    JSON.stringify({
+      type_: "LOG",
+      payload: {
+        type_: "DATA_FETCH",
+        rows_fetched: (data.rowData || []).length,
+        rows_with_data: (data.rowData || []).filter((r) =>
+          (r.values || []).map(toCellValue).some((v) => v !== null)
+        ).length,
+      },
+    })
   );
 
   return (data.rowData || [])
