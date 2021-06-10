@@ -14,7 +14,6 @@ export const daysFrom1899 = new t.Type<Date, number, unknown>(
       Either.map((days) => days * SECONDS_PER_DAY),
       Either.chain((n) => {
         const d = new Date(n * 1000 + GOOGLE_START_DATE_MS);
-        console.log(n);
         return isNaN(d.getTime()) ? t.failure(u, c) : t.success(d);
       })
     ),
