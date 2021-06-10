@@ -1,5 +1,5 @@
 import * as t from "io-ts";
-// import * as t_ from "io-ts-types/lib";
+import * as t_ from "io-ts-types/lib";
 import { pipe } from "fp-ts/lib/function";
 import * as Either from "fp-ts/lib/Either";
 
@@ -29,6 +29,10 @@ export const submission = t.type({
   sr: t.number,
   role: t.keyof({ Tank: null, DPS: null, Support: null }),
   notes: t.union([t.string, t.null]),
+  status_: t_.fromNullable(
+    t.keyof({ expired: null, completed: null, pending: null }),
+    "pending"
+  ),
 });
 
 export type Submission = t.TypeOf<typeof submission>;

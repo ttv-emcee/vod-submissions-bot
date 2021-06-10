@@ -44,6 +44,7 @@ export function parseSubmission(
     "sr",
     "role",
     "notes",
+    "status_",
   ];
 
   const cellValues = (row.values || []).map(toCellValue);
