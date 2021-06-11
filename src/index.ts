@@ -3,6 +3,7 @@ import { Submission } from "./types";
 
 type Entry = {
   twitch_username: string;
+  discord_username: string;
   pending: Submission[];
   completed: Submission[];
 };
@@ -34,8 +35,13 @@ function updateEntry(entry: Entry, submission: Submission): Entry {
 }
 
 function newEntry(submission: Submission): Entry {
-  const { twitch_username } = submission;
-  const emptyEntry: Entry = { twitch_username, pending: [], completed: [] };
+  const { twitch_username, discord_username } = submission;
+  const emptyEntry: Entry = {
+    twitch_username,
+    discord_username,
+    pending: [],
+    completed: [],
+  };
 
   return updateEntry(emptyEntry, submission);
 }
