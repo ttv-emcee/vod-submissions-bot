@@ -15,7 +15,7 @@ function updateEntry(entry: Entry, submission: Submission): Entry {
   const { twitch_username, status_ } = submission;
   console.assert(
     entry.twitch_username === twitch_username,
-    "Tried to update an entry with a submission for a different twitch user! (twitch_username: ${twitch_username}, entry_username: ${entry.twitch_username}"
+    `Tried to update an entry with a submission for a different twitch user! (twitch_username: ${twitch_username}, entry_username: ${entry.twitch_username}`
   );
 
   switch (status_) {
