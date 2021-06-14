@@ -1,15 +1,15 @@
 import { NonEmptyArray } from "fp-ts/lib/NonEmptyArray";
-import { Submission, Output, OutputVod } from "./types";
+import { Submission, Output, OutputVod, CompleteSubmission } from "./types";
 import * as utils from "./utils";
 
 export type Entry = {
   twitch_username: string;
   discord_username: string;
-  pending: NonEmptyArray<Submission>;
+  pending: NonEmptyArray<CompleteSubmission>;
   completed: Submission[];
 };
 type PendingEntry = Omit<Entry, "pending"> & {
-  pending: Submission[];
+  pending: CompleteSubmission[];
 };
 
 function updateEntry(
@@ -19,7 +19,8 @@ function updateEntry(
   const { twitch_username, status_ } = submission;
   console.assert(
     entry.twitch_username === twitch_username,
-    `Tried to update an entry with a submission for a different twitch user! (twitch_username: ${twitch_username}, entry_username: ${entry.twitch_username}`
+    "Tried to update an entry with a submission for a different twitch user!\n" +
+      `twitch_username: ${twitch_username}, entry_username: ${entry.twitch_username}`
   );
 
   switch (status_) {
@@ -29,9 +30,14 @@ function updateEntry(
         completed: [...entry.completed, submission],
       };
     case "pending":
+      const { vod_code } = submission;
+      if (vod_code === null) {
+        return entry;
+      }
+
       return {
         ...entry,
-        pending: [...entry.pending, submission],
+        pending: [...entry.pending, { ...submission, vod_code }],
       };
     case "expired":
       return entry;

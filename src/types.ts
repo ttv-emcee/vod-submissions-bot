@@ -37,6 +37,7 @@ export const submission = t.type({
 });
 
 export type Submission = t.TypeOf<typeof submission>;
+export type CompleteSubmission = Submission & { vod_code: string };
 
 export type OutputVod = {
   id: string;
