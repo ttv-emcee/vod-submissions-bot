@@ -1,5 +1,6 @@
-import { Submission, Output, OutputVod } from "./types";
 import { NonEmptyArray } from "fp-ts/lib/NonEmptyArray";
+import { Submission, Output, OutputVod } from "./types";
+import * as utils from "./utils";
 
 export type Entry = {
   twitch_username: string;
@@ -49,7 +50,7 @@ function newEntry(submission: Submission): PendingEntry {
   return updateEntry(emptyEntry, submission);
 }
 
-export function generateEntries(
+function generateEntries(
   acc: generateEntries.Accumulator,
   submission: Submission
 ): generateEntries.Accumulator {
@@ -70,11 +71,23 @@ export function generateEntries(
   };
 }
 
-export namespace generateEntries {
+namespace generateEntries {
   export type Lookup = { [twitch_username: string]: PendingEntry };
   export type Accumulator = { users: string[]; entries: Lookup };
 
   export const baseAccumulator = { users: [], entries: {} };
+
+  export const handleAccumulator = ({ users, entries }: Accumulator) =>
+    users.map((user) => entries[user]).filter(utils.notNull);
+}
+
+export function processSubmissions(submissions: Submission[]): PendingEntry[] {
+  const accumulator = submissions.reduce(
+    generateEntries,
+    generateEntries.baseAccumulator
+  );
+
+  return generateEntries.handleAccumulator(accumulator);
 }
 
 export function generateOutput(
