@@ -103,3 +103,38 @@ export async function fetchSubmissions(): Promise<types.Submission[]> {
     .map((x: types.Submission) => x)
     .sort(utils.sortBy((s) => s.submission_timestamp.getTime()));
 }
+
+export async function writeOutput(output: types.Output): Promise<void> {
+  const lineItem = (vod: types.OutputVod) => [
+    vod.id,
+    vod.code,
+    vod.sr,
+    vod.notes,
+  ];
+  const vods = output.vods.map((submission, index) => [
+    [
+      `Vod ${index + 1}`,
+      submission.twitch_username,
+      submission.discord_username,
+      submission.vod_queue,
+      ...lineItem(submission.vod),
+    ],
+    ...submission.backups
+      .slice(0, 3)
+      .map(lineItem)
+      .map((line) => [null, null, null, null, ...line]),
+  ]);
+
+  const metadata = [[null, new Date().toDateString()]];
+  const data = [
+    { range: "A1", values: metadata },
+    { range: "A6", values: vods },
+  ];
+
+  const _payload: Sheets.Schema$BatchUpdateValuesRequest = {
+    valueInputOption: "RAW",
+    data,
+  };
+
+  // sheets.write(config.spreadsheet.id, config.spreadsheet.output_sheet_id, payload);
+}
