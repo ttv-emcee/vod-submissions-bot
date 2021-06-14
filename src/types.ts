@@ -27,7 +27,7 @@ export const submission = t.type({
   discord_username: t.string,
   in_game_name: t.string,
   vod_code: t.union([t.string, t.null]),
-  sr: t.number,
+  sr: t.union([t.number, t.null]),
   role: t.keyof({ Tank: null, DPS: null, Support: null }),
   notes: t_.fromNullable(t.string, ""),
   status_: t_.fromNullable(
@@ -37,7 +37,6 @@ export const submission = t.type({
 });
 
 export type Submission = t.TypeOf<typeof submission>;
-export type CompleteSubmission = Submission & { vod_code: string };
 
 export type OutputVod = {
   id: string;

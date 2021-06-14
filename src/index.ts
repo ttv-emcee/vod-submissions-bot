@@ -6,7 +6,7 @@ async function main(): Promise<void> {
     .fetchSubmissions()
     .then(submissions.processSubmissions);
 
-  const output = entries.slice(0, 5);
+  const output = entries;
 
   console.log(JSON.stringify(output, null, 2));
 }

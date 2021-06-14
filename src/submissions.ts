@@ -1,7 +1,8 @@
 import { NonEmptyArray } from "fp-ts/lib/NonEmptyArray";
-import { Submission, Output, OutputVod, CompleteSubmission } from "./types";
+import { Submission } from "./types";
 import * as utils from "./utils";
 
+export type CompleteSubmission = Submission & { vod_code: string };
 export type Entry = {
   twitch_username: string;
   discord_username: string;
@@ -11,6 +12,9 @@ export type Entry = {
 type PendingEntry = Omit<Entry, "pending"> & {
   pending: CompleteSubmission[];
 };
+function hasPendingSubmissions(entry: PendingEntry): entry is Entry {
+  return entry.pending.length >= 0;
+}
 
 function updateEntry(
   entry: PendingEntry,
@@ -87,38 +91,14 @@ namespace generateEntries {
     users.map((user) => entries[user]).filter(utils.notNull);
 }
 
-export function processSubmissions(submissions: Submission[]): PendingEntry[] {
+export function processSubmissions(submissions: Submission[]): Entry[] {
   const accumulator = submissions.reduce(
     generateEntries,
     generateEntries.baseAccumulator
   );
 
-  return generateEntries.handleAccumulator(accumulator);
-}
-
-export function generateOutput(
-  entries: Entry[],
-  vodCodeExpiration: Date
-): Output {
-  const convertVod = ({ id, vod_code, sr, notes }: Submission): OutputVod => ({
-    id,
-    code: vod_code || "",
-    sr,
-    notes,
-  });
-
-  return {
-    vodCodeExpiration,
-    vods: entries.map((entry) => {
-      const [vod, ...backups] = entry.pending;
-
-      return {
-        twitch_username: vod.twitch_username,
-        discord_username: vod.discord_username,
-        vod_queue: entry.completed.length === 0 ? "Newbie" : "Homie",
-        vod: convertVod(vod),
-        backups: backups.map(convertVod),
-      };
-    }),
-  };
+  return generateEntries
+    .handleAccumulator(accumulator)
+    .filter(hasPendingSubmissions)
+    .slice(0, 3);
 }
