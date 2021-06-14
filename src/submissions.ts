@@ -1,13 +1,20 @@
-import { Submission } from "./types";
+import { Submission, Output, OutputVod } from "./types";
+import { NonEmptyArray } from "fp-ts/lib/NonEmptyArray";
 
 export type Entry = {
   twitch_username: string;
   discord_username: string;
-  pending: Submission[];
+  pending: NonEmptyArray<Submission>;
   completed: Submission[];
 };
+type PendingEntry = Omit<Entry, "pending"> & {
+  pending: Submission[];
+};
 
-function updateEntry(entry: Entry, submission: Submission): Entry {
+function updateEntry(
+  entry: PendingEntry,
+  submission: Submission
+): PendingEntry {
   const { twitch_username, status_ } = submission;
   console.assert(
     entry.twitch_username === twitch_username,
@@ -30,9 +37,9 @@ function updateEntry(entry: Entry, submission: Submission): Entry {
   }
 }
 
-function newEntry(submission: Submission): Entry {
+function newEntry(submission: Submission): PendingEntry {
   const { twitch_username, discord_username } = submission;
-  const emptyEntry: Entry = {
+  const emptyEntry: PendingEntry = {
     twitch_username,
     discord_username,
     pending: [],
@@ -64,8 +71,35 @@ export function generateEntries(
 }
 
 export namespace generateEntries {
-  export type Lookup = { [twitch_username: string]: Entry };
+  export type Lookup = { [twitch_username: string]: PendingEntry };
   export type Accumulator = { users: string[]; entries: Lookup };
 
   export const baseAccumulator = { users: [], entries: {} };
+}
+
+export function generateOutput(
+  entries: Entry[],
+  vodCodeExpiration: Date
+): Output {
+  const convertVod = ({ id, vod_code, sr, notes }: Submission): OutputVod => ({
+    id,
+    code: vod_code || "",
+    sr,
+    notes,
+  });
+
+  return {
+    vodCodeExpiration,
+    vods: entries.map((entry) => {
+      const [vod, ...backups] = entry.pending;
+
+      return {
+        twitch_username: vod.twitch_username,
+        discord_username: vod.discord_username,
+        vod_queue: entry.completed.length === 0 ? "Newbie" : "Homie",
+        vod: convertVod(vod),
+        backups: backups.map(convertVod),
+      };
+    }),
+  };
 }

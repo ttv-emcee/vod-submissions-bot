@@ -21,6 +21,7 @@ export const daysFrom1899 = new t.Type<Date, number, unknown>(
 );
 
 export const submission = t.type({
+  id: t.string,
   submission_timestamp: daysFrom1899,
   twitch_username: t.string,
   discord_username: t.string,
@@ -28,7 +29,7 @@ export const submission = t.type({
   vod_code: t.union([t.string, t.null]),
   sr: t.number,
   role: t.keyof({ Tank: null, DPS: null, Support: null }),
-  notes: t.union([t.string, t.null]),
+  notes: t_.fromNullable(t.string, ""),
   status_: t_.fromNullable(
     t.keyof({ expired: null, completed: null, pending: null }),
     "pending"
@@ -36,3 +37,22 @@ export const submission = t.type({
 });
 
 export type Submission = t.TypeOf<typeof submission>;
+
+export type OutputVod = {
+  id: string;
+  code: string;
+  sr: number | "";
+  notes: string;
+};
+
+export type SubmissionOutput = {
+  twitch_username: string;
+  discord_username: string;
+  vod_queue: "Homie" | "Newbie" | "";
+  vod: OutputVod;
+  backups: OutputVod[];
+};
+export type Output = {
+  vodCodeExpiration: Date;
+  vods: SubmissionOutput[];
+};
