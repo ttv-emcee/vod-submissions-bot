@@ -79,10 +79,10 @@ export function parseSubmission(
 }
 
 export async function fetchSubmissions(): Promise<types.Submission[]> {
-  const data = await sheets.getSheet(
-    config.spreadsheet.id,
-    config.spreadsheet.data_sheet_id
-  );
+  const data = await sheets.getSheet({
+    id: config.spreadsheet.id,
+    sheet: config.spreadsheet.data_sheet_id,
+  });
 
   console.error(
     JSON.stringify({
@@ -125,16 +125,21 @@ export async function writeOutput(output: types.Output): Promise<void> {
       .map((line) => [null, null, null, null, ...line]),
   ]);
 
-  const metadata = [[null, new Date().toDateString()]];
-  const data = [
-    { range: "A1", values: metadata },
-    { range: "A6", values: vods },
+  const metadata = [
+    [new Date().toDateString(), output.vodCodeExpiration.toDateString()],
+  ];
+  const data: Sheets.Schema$ValueRange[] = [
+    { majorDimension: "COLUMNS", range: "B1:B2", values: metadata },
+    { range: "A6:I", values: vods[0] },
   ];
 
-  const _payload: Sheets.Schema$BatchUpdateValuesRequest = {
+  const payload: Sheets.Schema$BatchUpdateValuesRequest = {
     valueInputOption: "RAW",
     data,
   };
 
-  // sheets.write(config.spreadsheet.id, config.spreadsheet.output_sheet_id, payload);
+  await sheets.writeData(
+    { id: config.spreadsheet.id, sheet: config.spreadsheet.output_sheet_id },
+    payload
+  );
 }

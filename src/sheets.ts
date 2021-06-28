@@ -4,6 +4,11 @@ import { secrets } from "./config";
 
 let sheets: Sheets.Sheets | undefined = undefined;
 
+export type Spreadsheet = {
+  id: string;
+  sheet: number;
+};
+
 async function getSheets(): Promise<Sheets.Sheets> {
   if (sheets) return sheets;
 
@@ -21,26 +26,51 @@ async function getSheets(): Promise<Sheets.Sheets> {
 }
 
 export async function getSheet(
-  spreadsheetId: string,
-  sheetId: number
+  spreadsheet: Spreadsheet
 ): Promise<Sheets.Schema$GridData> {
   sheets = await getSheets();
 
   const res = await sheets.spreadsheets.get({
-    spreadsheetId: spreadsheetId,
+    spreadsheetId: spreadsheet.id,
     includeGridData: true,
   });
 
   const data = res.data.sheets?.find(
-    (sheet) => sheet.properties?.sheetId == sheetId
+    (sheet) => sheet.properties?.sheetId == spreadsheet.sheet
   )?.data;
 
   if (!data || !data[0]) {
     const errorMsg =
-      `Data spreadsheet (id: ${sheetId})` +
-      ` not found on spreadsheet ${spreadsheetId}`;
+      `Spreadsheet (id: ${spreadsheet.sheet})` +
+      ` not found on spreadsheet ${spreadsheet.id}`;
     throw new Error(errorMsg);
   }
 
   return data[0];
+}
+
+export async function writeData(
+  spreadsheet: Spreadsheet,
+  payload: Sheets.Schema$BatchUpdateValuesRequest
+): Promise<void> {
+  sheets = await getSheets();
+
+  const response = await sheets.spreadsheets.values.batchUpdate({
+    spreadsheetId: spreadsheet.id,
+    requestBody: payload,
+  });
+
+  console.log(
+    JSON.stringify(
+      {
+        type_: "LOG",
+        payload: {
+          type_: "DATA_WRITE",
+          data: response.data,
+        },
+      },
+      null,
+      2
+    )
+  );
 }
